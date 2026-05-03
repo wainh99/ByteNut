@@ -1,7 +1,7 @@
 name: 自动同步上游更新
 on:
   schedule:
-    - cron: '0 20 * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: false
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 配置Git
         run: |
@@ -25,12 +25,11 @@ jobs:
       - name: 添加上游仓库
         run: git remote add upstream https://github.com/oyz8/ByteNut.git
 
-      - name: 拉取更新
+      - name: 拉取上游更新
         run: git fetch upstream
 
       - name: 合并更新
-        run: git merge upstream/main --allow-unrelated-histories
+        run: git merge upstream/main --no-edit --allow-unrelated-histories
 
       - name: 推送更新
-        run: |
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+        run: git push origin main
